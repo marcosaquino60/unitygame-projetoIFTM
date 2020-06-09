@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using NavGame.Managers;
-
 namespace NavGame.Core
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -11,21 +10,30 @@ namespace NavGame.Core
     {
         public OfenseStats ofenseStats;
         public float attackRange = 4f;
+        public float attackDelay = 0.5f;
+        public Transform castTransform;
         public string[] enemyLayers;
 
         [SerializeField]
         protected List<DamageableGameObject> enemiesToAttack = new List<DamageableGameObject>();
-
         protected NavMeshAgent agent;
         float cooldown = 0f;
         LayerMask enemyMask;
 
         public OnAttackHitEvent onAttackHit;
+        public OnAttackStartEvent onAttackStart;
+        public OnAttackCastEvent onAttackCast;
+        public OnAttackStrikeEvent onAttackStrike;
 
         protected virtual void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
             enemyMask = LayerMask.GetMask(enemyLayers);
+
+            if (castTransform == null)
+            {
+                castTransform = transform;
+            }
         }
 
         protected virtual void Update()
@@ -33,7 +41,6 @@ namespace NavGame.Core
             DecreaseAttackCooldown();
             UpdateAttack();
         }
-
         protected virtual void UpdateAttack()
         {
             if (enemiesToAttack.Count > 0)
@@ -47,18 +54,38 @@ namespace NavGame.Core
                 }
             }
         }
-
         public void AttackOnCooldown(DamageableGameObject target)
         {
             if (cooldown <= 0f)
             {
                 cooldown = 1f / ofenseStats.attackSpeed;
+                if (onAttackStart != null)
+                {
+                    onAttackStart();
+                }
+                StartCoroutine(AttackAfterDelay(target, attackDelay));
+            }
+        }
+
+        IEnumerator AttackAfterDelay(DamageableGameObject target, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (target != null)
+            {
+                if (onAttackCast != null)
+                {
+                    onAttackCast(castTransform.position);
+                }
+
                 target.TakeDamage(ofenseStats.damage);
                 if (onAttackHit != null)
-                {
-                    onAttackHit(target.transform.position);
-                }
+                    if (onAttackStrike != null)
+                    {
+                        onAttackHit(target.transform.position);
+                        onAttackStrike(target.damageTransform.position);
+                    }
             }
+
         }
 
         void DecreaseAttackCooldown()
@@ -67,13 +94,12 @@ namespace NavGame.Core
             {
                 return;
             }
-            cooldown -= Time.deltaTime;
+            cooldown = cooldown - Time.deltaTime;
             if (cooldown < 0f)
             {
                 cooldown = 0f;
             }
         }
-
         void OnTriggerEnter(Collider other)
         {
             if (enemyMask.Contains(other.gameObject.layer))
@@ -82,11 +108,10 @@ namespace NavGame.Core
                 if (!enemiesToAttack.Contains(obj))
                 {
                     enemiesToAttack.Add(obj);
-                    obj.onDied += () => { enemiesToAttack.Remove(obj); }; 
+                    obj.onDied += () => { enemiesToAttack.Remove(obj); };
                 }
             }
         }
-
         void OnTriggerExit(Collider other)
         {
             if (enemyMask.Contains(other.gameObject.layer))
@@ -95,14 +120,11 @@ namespace NavGame.Core
                 enemiesToAttack.Remove(obj);
             }
         }
-
-
         public bool IsInRange(Vector3 point)
         {
             float distance = Vector3.Distance(transform.position, point);
             return distance <= attackRange;
         }
-
         protected override void OnDrawGizmosSelected()
         {
             base.OnDrawGizmosSelected();
