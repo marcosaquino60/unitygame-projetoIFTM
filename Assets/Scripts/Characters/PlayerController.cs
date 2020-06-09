@@ -4,18 +4,23 @@ using UnityEngine;
 using UnityEngine.AI;
 using NavGame.Core;
 
-[RequireComponent(typeof(NavMeshAgent))]
 public class PlayerController : TouchableGameObject
 {
     NavMeshAgent agent;
     Camera cam;
     public LayerMask walkableLayer;
-
-    void Awake()
+    public GameObject prefab;
+    void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         cam = Camera.main;
+        GameObject obj = GameObject.FindWithTag("Finish");
+        DamageableGameObject dgo = obj.GetComponent<DamageableGameObject>();
+        GameObject projectile = Instantiate(prefab, transform.position, Quaternion.identity) as GameObject;
+        ProjectileController controller = projectile.GetComponent<ProjectileController>();
+        controller.Init(dgo, 20);
     }
+
 
     void Update()
     {
@@ -23,7 +28,6 @@ public class PlayerController : TouchableGameObject
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, walkableLayer))
             {
                 agent.SetDestination(hit.point);
