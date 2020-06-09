@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.44657868, g: 0.49641263, b: 0.57481706, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -375,6 +375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a1b831bb34c1db44b61c8500836a4f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  angularSpeed: 6
   contactRadius: 0.53
   walkableLayer:
     serializedVersion: 2
@@ -798,11 +799,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58d6f785603f69b4d8d2cecf2ec0f44d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  angularSpeed: 6
   contactRadius: 1.62
   defenseStats:
     maxHealth: 100
     armor: 1
   currentHealth: 0
+  damageTransform: {fileID: 0}
 --- !u!114 &1039147482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -968,6 +971,18 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: d6c91dab11efc54479b5f917014c1b6b, type: 3}
   - name: level-complete
     audio: {fileID: 8300000, guid: e08c695d3a29df449967175f4eb929c3, type: 3}
+  - name: splash-death1
+    audio: {fileID: 8300000, guid: 652e713d285011f439007f51ce9036f9, type: 3}
+  - name: splash-death2
+    audio: {fileID: 8300000, guid: df7f48fd2cdf0f04590e160cf9f15b19, type: 3}
+  - name: splash-hit1
+    audio: {fileID: 8300000, guid: 766eb1bc30fbe6d4ea60c9c7f1abd6ad, type: 3}
+  - name: splash-hit2
+    audio: {fileID: 8300000, guid: d9455e4955cf5a447b4285267f5ed5e4, type: 3}
+  - name: splash-strike1
+    audio: {fileID: 8300000, guid: eb805b4b82614ec4ea1560f9fbce4f94, type: 3}
+  - name: splash-strike2
+    audio: {fileID: 8300000, guid: 7cbd000f5249c8c44a74a559b2fc9768, type: 3}
 --- !u!4 &1374847405
 Transform:
   m_ObjectHideFlags: 0
@@ -1354,11 +1369,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58d6f785603f69b4d8d2cecf2ec0f44d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  angularSpeed: 6
   contactRadius: 0.5
   defenseStats:
     maxHealth: 100
     armor: 1
   currentHealth: 0
+  damageTransform: {fileID: 0}
 --- !u!54 &7200807242280016116
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1460,12 +1477,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfe56375826772541b36930fef6178bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  angularSpeed: 6
   contactRadius: 0.5
   ofenseStats:
     damage: 10
     attackSpeed: 1
+  attackRange: 4
   enemyLayers:
   - Creep
+  enemiesToAttack: []
 --- !u!65 &7200807242812297700
 BoxCollider:
   m_ObjectHideFlags: 0
