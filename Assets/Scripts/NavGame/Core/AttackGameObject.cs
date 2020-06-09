@@ -6,36 +6,31 @@ using NavGame.Managers;
 namespace NavGame.Core
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    public class AttackGameObject : TouchableGameObject
+   
+    public abstract class AttackGameObject : TouchableGameObject
     {
         public OfenseStats ofenseStats;
         public float attackRange = 4f;
         public float attackDelay = 0.5f;
         public Transform castTransform;
         public string[] enemyLayers;
-
         [SerializeField]
         protected List<DamageableGameObject> enemiesToAttack = new List<DamageableGameObject>();
         protected NavMeshAgent agent;
         float cooldown = 0f;
         LayerMask enemyMask;
-
-        public OnAttackHitEvent onAttackHit;
         public OnAttackStartEvent onAttackStart;
         public OnAttackCastEvent onAttackCast;
         public OnAttackStrikeEvent onAttackStrike;
-
         protected virtual void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
             enemyMask = LayerMask.GetMask(enemyLayers);
-
             if (castTransform == null)
             {
                 castTransform = transform;
             }
         }
-
         protected virtual void Update()
         {
             DecreaseAttackCooldown();
@@ -66,7 +61,6 @@ namespace NavGame.Core
                 StartCoroutine(AttackAfterDelay(target, attackDelay));
             }
         }
-
         IEnumerator AttackAfterDelay(DamageableGameObject target, float delay)
         {
             yield return new WaitForSeconds(delay);
@@ -77,17 +71,11 @@ namespace NavGame.Core
                     onAttackCast(castTransform.position);
                 }
 
-                target.TakeDamage(ofenseStats.damage);
-                if (onAttackHit != null)
-                    if (onAttackStrike != null)
-                    {
-                        onAttackHit(target.transform.position);
-                        onAttackStrike(target.damageTransform.position);
-                    }
+                
+                Attack(target);
             }
 
         }
-
         void DecreaseAttackCooldown()
         {
             if (cooldown == 0f)
@@ -131,5 +119,7 @@ namespace NavGame.Core
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, attackRange);
         }
+
+        protected abstract void Attack(DamageableGameObject target);
     }
 }

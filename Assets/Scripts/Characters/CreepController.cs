@@ -5,7 +5,8 @@ using UnityEngine.AI;
 using NavGame.Core;
 using NavGame.Managers;
 
-public class CreepController : AttackGameObject
+
+public class CreepController : InstantAttackerGameObject
 {
     DamageableGameObject finalTarget;
 
@@ -17,10 +18,7 @@ public class CreepController : AttackGameObject
         {
             finalTarget = obj.GetComponent<DamageableGameObject>();
         }
-
-     
     }
-
     protected override void Update()
     {
         base.Update();
@@ -34,6 +32,7 @@ public class CreepController : AttackGameObject
                 AttackOnCooldown(finalTarget);
             }
         }
+
     }
 
     void Start()
@@ -43,6 +42,4 @@ public class CreepController : AttackGameObject
             agent.SetDestination(finalTarget.transform.position);
         }
     }
-
-    
 }
