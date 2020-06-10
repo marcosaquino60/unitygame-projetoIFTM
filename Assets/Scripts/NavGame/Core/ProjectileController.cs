@@ -40,6 +40,7 @@ namespace NavGame.Core
             {
                 target.TakeDamage(damage);
                 Destroy(gameObject);
+    
                 if (onAttackStrike != null)
                 {
                     onAttackStrike(target.damageTransform.position);
