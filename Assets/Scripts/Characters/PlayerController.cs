@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using NavGame.Core;
 using NavGame.Managers;
-
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerController : TouchableGameObject
 {
@@ -32,10 +31,8 @@ public class PlayerController : TouchableGameObject
         {
             LevelManager.instance.CancelAction();
             actionPoint = Vector3.zero;
-
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, walkableLayer))
             {
                 agent.SetDestination(hit.point);
@@ -50,7 +47,6 @@ public class PlayerController : TouchableGameObject
                 pickupTarget = null;
             }
         }
-       
         else if (Input.GetMouseButtonDown(0) && LevelManager.instance.IsActionSelected())
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -61,7 +57,6 @@ public class PlayerController : TouchableGameObject
                 agent.SetDestination(hit.point);
             }
         }
-
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             LevelManager.instance.SelectedAction(0);
@@ -74,15 +69,14 @@ public class PlayerController : TouchableGameObject
         {
             LevelManager.instance.SelectedAction(2);
         }
-
     }
-
     void UpdateCollect()
     {
         if (pickupTarget != null)
         {
             if (IsInTouch(pickupTarget))
             {
+                LevelManager.instance.AddResource(pickupTarget.amount);
                 pickupTarget.Pickup();
             }
         }
