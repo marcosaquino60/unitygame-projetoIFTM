@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using NavGame.Managers;
-
 public class UIManager : MonoBehaviour
 {
     public GameObject errorPanel;
@@ -11,8 +10,11 @@ public class UIManager : MonoBehaviour
     public float errorTime = 1.5f;
 
     public Text coinText;
+    public Text waveCountText;
+    public Text waveCountdownText;
     public GameObject[] cooldownObjects;
     public Text[] actionCosts;
+
     Image[] cooldownImages;
     void Awake()
     {
@@ -21,6 +23,8 @@ public class UIManager : MonoBehaviour
         LevelManager.instance.onActionCooldownUpdate += OnActionCooldownUpdate;
         LevelManager.instance.onResourceUpdate += OnResourceUpdate;
         LevelManager.instance.onReportableError += OnReportableError;
+        LevelManager.instance.onWaveUpdate += OnWaveUpdate;
+        LevelManager.instance.onWaveCountdown += OnWaveCountdown;
     }
 
     void Start()
@@ -34,12 +38,10 @@ public class UIManager : MonoBehaviour
         {
             cooldownImages[i] = cooldownObjects[i].GetComponent<Image>();
             cooldownImages[i].fillAmount = 0f;
-
             actionCosts[i].text = "(" + LevelManager.instance.actions[i].cost + ")";
         }
         errorPanel.SetActive(false);
     }
-
     void OnActionSelect(int actionIndex)
     {
         cooldownImages[actionIndex].fillAmount = 1f;
@@ -57,13 +59,22 @@ public class UIManager : MonoBehaviour
     {
         coinText.text = "x " + currentAmount;
     }
-
     void OnReportableError(string message)
     {
         errorText.text = message;
         errorPanel.SetActive(true);
         StartCoroutine(TurnOffError());
     }
+    void OnWaveUpdate(int totalWaves, int currentWave)
+    {
+        waveCountText.text = currentWave + " / " + totalWaves;
+    }
+
+    void OnWaveCountdown(float remainingTime)
+    {
+        waveCountdownText.text = remainingTime.ToString("F1");
+    }
+
 
     IEnumerator TurnOffError()
     {

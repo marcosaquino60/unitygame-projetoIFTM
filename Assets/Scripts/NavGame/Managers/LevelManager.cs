@@ -16,7 +16,9 @@ namespace NavGame.Managers
         public OnActionCooldownUpdateEvent onActionCooldownUpdate;
         public OnResourceUpdateEvent onResourceUpdate;
         public OnReportableErrorEvent onReportableError;
+        public OnWaveUpdateEvent onWaveUpdate;
 
+        public OnWaveCountdownEvent onWaveCountdown;
 
         protected int selectedAction = -1;
         protected LevelData levelData = new LevelData();
@@ -31,7 +33,7 @@ namespace NavGame.Managers
                 Destroy(gameObject);
             }
         }
-        void Start()
+        protected virtual void Start()
         {
             StartCoroutine(SpawnBad());
         }
@@ -43,41 +45,34 @@ namespace NavGame.Managers
                 onResourceUpdate(levelData.CoinCount);
             }
         }
-
         public virtual void SelectedAction(int actionIndex)
         {
-           
-                try
+            try
+            {
+                levelData.ValidateCoinAmount(actions[actionIndex].cost);
+                if (actions[actionIndex].coolDown > 0)
                 {
-                    
-                    levelData.ValidateCoinAmount(actions[actionIndex].cost);
-                    if (actions[actionIndex].coolDown > 0)
-                    {
-                        AudioManager.instance.Play(errorSound, PlayerManager.instance.GetPlayer().transform.position);
-                        return;
-                    }
-                    CancelAction();
-                    selectedAction = actionIndex;
-                    if (onActionSelect != null)
-                    {
-                        onActionSelect(actionIndex);
-                    }
-                }
-            
-            catch (InvalidOperationException e)
-                {
-                   
                     AudioManager.instance.Play(errorSound, PlayerManager.instance.GetPlayer().transform.position);
-                    if (onReportableError != null)
-                    {
-                        onReportableError(e.Message);
-                    }
+                    return;
                 }
+                CancelAction();
+                selectedAction = actionIndex;
+                if (onActionSelect != null)
+                {
+                    onActionSelect(actionIndex);
+                }
+            }
+            catch (InvalidOperationException e)
+            {
+                AudioManager.instance.Play(errorSound, PlayerManager.instance.GetPlayer().transform.position);
+                if (onReportableError != null)
+                {
+                    onReportableError(e.Message);
+                }
+            }
         }
-
         public virtual void DoAction(Vector3 point)
         {
-            
             try
             {
                 levelData.ConsumeCoins(actions[selectedAction].cost);
@@ -99,7 +94,6 @@ namespace NavGame.Managers
                 }
             }
         }
-
         public virtual void CancelAction()
         {
             if (selectedAction != -1)
