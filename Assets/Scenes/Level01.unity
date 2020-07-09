@@ -865,6 +865,7 @@ GameObject:
   - component: {fileID: 378348762}
   - component: {fileID: 378348761}
   - component: {fileID: 378348763}
+  - component: {fileID: 378348764}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -946,6 +947,19 @@ MonoBehaviour:
   collectibleLayer:
     serializedVersion: 2
     m_Bits: 4096
+--- !u!114 &378348764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378348759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31f48992ddee71a438429fcbaa379598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smoothness: 0.1
 --- !u!1 &399475082
 GameObject:
   m_ObjectHideFlags: 0
@@ -2600,6 +2614,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Raposita
       objectReference: {fileID: 0}
+    - target: {fileID: 810866690340757825, guid: 5a95975a143b8664bb2275b79f1d26ca,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: df29603f381dc6441b4b9744e85c852c, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a95975a143b8664bb2275b79f1d26ca, type: 3}
 --- !u!4 &1366415271 stripped
