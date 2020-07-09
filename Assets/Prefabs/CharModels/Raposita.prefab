@@ -1907,7 +1907,7 @@ GameObject:
   - component: {fileID: 810866690340757825}
   - component: {fileID: 6747814612504059005}
   m_Layer: 0
-  m_Name: raposita
+  m_Name: Raposita
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1939,7 +1939,7 @@ Animator:
   m_GameObject: {fileID: 810866690331267893}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: ce6f82f88ee2d154aa430499db9ca1e5, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: df29603f381dc6441b4b9744e85c852c, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
