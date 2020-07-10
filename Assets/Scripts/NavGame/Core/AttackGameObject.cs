@@ -6,7 +6,6 @@ using NavGame.Managers;
 namespace NavGame.Core
 {
     [RequireComponent(typeof(NavMeshAgent))]
-   
     public abstract class AttackGameObject : TouchableGameObject
     {
         public OfenseStats ofenseStats;
@@ -14,6 +13,8 @@ namespace NavGame.Core
         public float attackDelay = 0.5f;
         public Transform castTransform;
         public string[] enemyLayers;
+        public bool isInCombat { get; private set; }
+
         [SerializeField]
         protected List<DamageableGameObject> enemiesToAttack = new List<DamageableGameObject>();
         protected NavMeshAgent agent;
@@ -46,9 +47,13 @@ namespace NavGame.Core
                     agent.ResetPath();
                     FaceObjectFrame(enemiesToAttack[0].gameObject.transform);
                     AttackOnCooldown(enemiesToAttack[0]);
+                    isInCombat = true;
+                    return;
                 }
             }
+            isInCombat = false;
         }
+
         public void AttackOnCooldown(DamageableGameObject target)
         {
             if (cooldown <= 0f)
@@ -71,10 +76,8 @@ namespace NavGame.Core
                     onAttackCast(castTransform.position);
                 }
 
-                
                 Attack(target);
             }
-
         }
         void DecreaseAttackCooldown()
         {
@@ -82,7 +85,7 @@ namespace NavGame.Core
             {
                 return;
             }
-            cooldown = cooldown - Time.deltaTime;
+            cooldown -= Time.deltaTime;
             if (cooldown < 0f)
             {
                 cooldown = 0f;
@@ -119,7 +122,6 @@ namespace NavGame.Core
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, attackRange);
         }
-
         protected abstract void Attack(DamageableGameObject target);
     }
 }
