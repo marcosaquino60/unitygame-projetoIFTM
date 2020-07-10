@@ -8,10 +8,11 @@ namespace NavGame.Core
         public DefenseStats defenseStats;
         public int currentHealth;
         public Transform damageTransform;
-
         public OnDamageTakenEvent onDamageTaken;
         public OnHealthChangedEvent onHealthChanged;
         public OnDiedEvent onDied;
+
+        bool isDead = false;
 
         protected virtual void Awake()
         {
@@ -21,19 +22,15 @@ namespace NavGame.Core
                 damageTransform = transform;
             }
         }
-
         public void TakeDamage(int amount)
         {
-            amount = amount - defenseStats.armor;
+            amount -= defenseStats.armor;
             amount = Mathf.Clamp(amount, 1, defenseStats.maxHealth);
-
-            currentHealth = currentHealth - amount;
-
+            currentHealth -= amount;
             if (onDamageTaken != null)
             {
                 onDamageTaken(damageTransform.position, amount);
             }
-
             if (onHealthChanged != null)
             {
                 onHealthChanged(defenseStats.maxHealth, currentHealth);
@@ -43,13 +40,20 @@ namespace NavGame.Core
                 Die();
             }
         }
+
         public virtual void Die()
         {
-            Destroy(gameObject);
-            if (onDied != null)
-            {
-                onDied();
-            }
+            
+                if (!isDead)
+                {
+                    
+                    isDead = true;
+                    Destroy(gameObject);
+                    if (onDied != null)
+                    {
+                        onDied();
+                    }
+                }
         }
     }
 }

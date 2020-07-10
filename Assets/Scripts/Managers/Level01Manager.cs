@@ -2,22 +2,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NavGame.Managers;
+using NavGame.Core;
+
 public class Level01Manager : LevelManager
 {
-    public Transform[] badSpawm;
-    public GameObject badPrefabs;
+    public Transform[] badSpawn;
+    public GameObject badPrefab;
     public int badWaves = 3;
     public int monstersPerWave = 2;
     public float waitTimeFirstWave = 2f;
     public float waitTimeBetweenWaves = 4f;
+
+    int totalCreep;
+
     protected override void Start()
     {
         base.Start();
+
+        totalCreep = badWaves * monstersPerWave;
+
         if (onWaveUpdate != null)
         {
             onWaveUpdate(badWaves, 0);
         }
     }
+
+    void OnCreepDied()
+    {
+        totalCreep--;
+
+        if (totalCreep == 0)
+        {
+            EmitVictoryEvent();
+        }
+    }
+
     protected override IEnumerator SpawnBad()
     {
         float wait = waitTimeFirstWave;
@@ -32,20 +51,22 @@ public class Level01Manager : LevelManager
         }
         for (int i = 0; i < badWaves; i++)
         {
-            for (int j = 0; j < badSpawm.Length; j++)
+            for (int j = 0; j < badSpawn.Length; j++)
             {
                 for (int k = 0; k < monstersPerWave; k++)
                 {
                     Vector3 offset = new Vector3(Random.Range(-0.1f, 0.1f), 0f, Random.Range(-0.1f, 0.1f));
-                    Instantiate(badPrefabs, badSpawm[j].position, Quaternion.identity);
+                    
+
+                    GameObject obj = Instantiate(badPrefab, badSpawn[j].position + offset, Quaternion.identity) as GameObject;
+                    DamageableGameObject damageable = obj.GetComponent<DamageableGameObject>();
+                    damageable.onDied += OnCreepDied;
                 }
             }
             if (onWaveUpdate != null)
             {
                 onWaveUpdate(badWaves, i + 1);
             }
-           
-
             if (i < badWaves - 1)
             {
                 wait = waitTimeBetweenWaves;
@@ -60,10 +81,9 @@ public class Level01Manager : LevelManager
                 }
             }
         }
-    
         if (onWaveCountdown != null)
         {
             onWaveCountdown(0f);
-}
+        }
     }
 }

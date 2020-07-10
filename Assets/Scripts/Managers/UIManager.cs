@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour
 {
     public GameObject errorPanel;
     public GameObject defeatPanel;
+    public GameObject victoryPanel;
     public Text errorText;
     public float errorTime = 1.5f;
 
@@ -15,10 +16,7 @@ public class UIManager : MonoBehaviour
     public Text waveCountdownText;
     public GameObject[] cooldownObjects;
     public Text[] actionCosts;
-
     Image[] cooldownImages;
-
-   
     void OnEnable()
     {
         LevelManager.instance.onActionSelect += OnActionSelect;
@@ -29,6 +27,7 @@ public class UIManager : MonoBehaviour
         LevelManager.instance.onWaveUpdate += OnWaveUpdate;
         LevelManager.instance.onWaveCountdown += OnWaveCountdown;
         LevelManager.instance.onDefeat += OnDefeat;
+        LevelManager.instance.onVictory += OnVictory;
     }
 
     void Start()
@@ -77,11 +76,16 @@ public class UIManager : MonoBehaviour
     {
         waveCountdownText.text = remainingTime.ToString("F1");
     }
-
     void OnDefeat()
     {
         LevelManager.instance.Pause();
         defeatPanel.SetActive(true);
+    }
+
+    void OnVictory()
+    {
+        LevelManager.instance.Pause();
+        victoryPanel.SetActive(true);
     }
 
     public void OnBtReloadClick()
@@ -89,13 +93,11 @@ public class UIManager : MonoBehaviour
         LevelManager.instance.Resume();
         NavigationManager.instance.ReloadScene();
     }
-
     public void OnBtExitClick()
     {
         LevelManager.instance.Resume();
         NavigationManager.instance.LoadScene("Home");
     }
-
     IEnumerator TurnOffError()
     {
         yield return new WaitForSeconds(errorTime);
