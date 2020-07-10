@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NavGame.Core;
 using NavGame.Models;
+
 namespace NavGame.Managers
 {
     public abstract class LevelManager : MonoBehaviour
@@ -11,17 +12,24 @@ namespace NavGame.Managers
         public static LevelManager instance;
         public Action[] actions;
         public string errorSound;
+
         public OnActionSelectEvent onActionSelect;
         public OnActionCancelEvent onActionCancel;
         public OnActionCooldownUpdateEvent onActionCooldownUpdate;
         public OnResourceUpdateEvent onResourceUpdate;
         public OnReportableErrorEvent onReportableError;
         public OnWaveUpdateEvent onWaveUpdate;
-
         public OnWaveCountdownEvent onWaveCountdown;
+        public OnDefeatEvent onDefeat;
+        public OnVictoryEvent onVictory;
+
+        public bool isPaused { get; private set; } = false;
 
         protected int selectedAction = -1;
         protected LevelData levelData = new LevelData();
+
+        DamageableGameObject nexus;
+
         protected virtual void Awake()
         {
             if (instance == null)
@@ -32,11 +40,22 @@ namespace NavGame.Managers
             {
                 Destroy(gameObject);
             }
+
+            GameObject obj = GameObject.FindWithTag("Finish");
+            nexus = obj.GetComponent<DamageableGameObject>();
         }
+
+        void OnEnable()
+        {
+            nexus.onDied += EmitDefeatEvent;
+        }
+
         protected virtual void Start()
         {
+            AddResource(12);
             StartCoroutine(SpawnBad());
         }
+
         public virtual void AddResource(int amount)
         {
             levelData.AddCoins(amount);
@@ -45,7 +64,8 @@ namespace NavGame.Managers
                 onResourceUpdate(levelData.CoinCount);
             }
         }
-        public virtual void SelectedAction(int actionIndex)
+
+        public virtual void SelectAction(int actionIndex)
         {
             try
             {
@@ -71,6 +91,7 @@ namespace NavGame.Managers
                 }
             }
         }
+
         public virtual void DoAction(Vector3 point)
         {
             try
@@ -94,6 +115,7 @@ namespace NavGame.Managers
                 }
             }
         }
+
         public virtual void CancelAction()
         {
             if (selectedAction != -1)
@@ -106,10 +128,12 @@ namespace NavGame.Managers
                 }
             }
         }
+
         public bool IsActionSelected()
         {
             return selectedAction != -1;
         }
+
         IEnumerator ProcessCooldown(int actionIndex)
         {
             Action action = actions[actionIndex];
@@ -129,7 +153,37 @@ namespace NavGame.Managers
                 onActionCooldownUpdate(actionIndex, action.coolDown, action.waitTime);
             }
         }
+
+        void EmitDefeatEvent()
+        {
+            if (onDefeat != null)
+            {
+                onDefeat();
+            }
+        }
+
+        protected void EmitVictoryEvent()
+        {
+            if (onVictory != null)
+            {
+                onVictory();
+            }
+        }
+
+        public void Pause()
+        {
+            isPaused = true;
+            Time.timeScale = 0f;
+        }
+
+        public void Resume()
+        {
+            isPaused = false;
+            Time.timeScale = 1f;
+        }
+
         protected abstract IEnumerator SpawnBad();
+
         [Serializable]
         public class Action
         {

@@ -4,39 +4,50 @@ using UnityEngine;
 using UnityEngine.AI;
 using NavGame.Core;
 using NavGame.Managers;
+
 [RequireComponent(typeof(NavMeshAgent))]
 public class PlayerController : TouchableGameObject
 {
     NavMeshAgent agent;
     Camera cam;
+
     public float range = 4f;
+
     public LayerMask walkableLayer;
     public LayerMask collectibleLayer;
+
     CollectibleGameObject pickupTarget;
+
     Vector3 actionPoint = Vector3.zero;
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         cam = Camera.main;
     }
+
     void Update()
     {
         ProcessInput();
         UpdateCollect();
         UpdateAction();
     }
+
     void ProcessInput()
     {
         if (Input.GetMouseButtonDown(1))
         {
             LevelManager.instance.CancelAction();
             actionPoint = Vector3.zero;
+
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, walkableLayer))
             {
                 agent.SetDestination(hit.point);
             }
+
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, collectibleLayer))
             {
                 pickupTarget = hit.collider.gameObject.GetComponent<CollectibleGameObject>();
@@ -51,25 +62,28 @@ public class PlayerController : TouchableGameObject
         {
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, walkableLayer))
             {
                 actionPoint = hit.point;
                 agent.SetDestination(hit.point);
             }
         }
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            LevelManager.instance.SelectedAction(0);
+            LevelManager.instance.SelectAction(0);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            LevelManager.instance.SelectedAction(1);
+            LevelManager.instance.SelectAction(1);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            LevelManager.instance.SelectedAction(2);
+            LevelManager.instance.SelectAction(2);
         }
     }
+
     void UpdateCollect()
     {
         if (pickupTarget != null)
@@ -81,6 +95,7 @@ public class PlayerController : TouchableGameObject
             }
         }
     }
+
     void UpdateAction()
     {
         if (actionPoint != Vector3.zero)
